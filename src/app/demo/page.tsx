@@ -2,95 +2,135 @@
 
 import { motion } from 'framer-motion'
 import Navbar from '@/components/Navbar'
+import { useEffect, useState } from 'react'
+import { initializeBreezSDK, getNwcConnectionUri, getWalletInfo, disconnectBreez } from '@/lib/sdk'
 
 export default function DemoPage() {
+  //persistent state
+  const [demoState, setDemoState] = useState('greeting')
+  const [mnemonic, setMnemonic] = useState('')
+  const [nwcUri, setNwcUri] = useState('')
+  const [isConnected, setIsConnected] = useState(false)
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedState = localStorage.getItem('demoState')
+      const savedMnemonic = localStorage.getItem('mnemonic')
+      const savedNwcUri = localStorage.getItem('nwcUri')
+
+      if (savedState) {
+        setDemoState(savedState)
+        setMnemonic(savedMnemonic || '')
+        setNwcUri(savedNwcUri || '')
+      }
+    }
+  }, [])
+
+  const startDemo = async () => {
+    setDemoState('initializing')
+    localStorage.setItem('demoState', 'initializing')
+    try{
+      const {mnemonic}=await initializeBreezSDK()
+      setMnemonic(mnemonic)
+      localStorage.setItem('mnemonic', mnemonic)
+      setDemoState('mnemonic')
+      localStorage.setItem('demoState', 'mnemonic')
+    } catch (error) {
+      console.error('Demo failed:', error)
+      setDemoState('greeting')
+      localStorage.clear()
+    }
+  }
+
+  const proceedToNWC = async () => {
+    setDemoState('initializing')
+    
+    try{
+      const uri = await getNwcConnectionUri()
+      setNwcUri(uri)
+      localStorage.setItem('nwcUri', uri)
+      setDemoState('nwc-ready')
+      localStorage.setItem('demoState', 'nwc-ready')
+    } catch (error) {
+      console.error('NWC failed:', error)
+    }
+  }
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-sky-100 to-indigo-100">
       <Navbar />
       <div className="container mx-auto px-6 py-12">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
-            NWC Demo
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Interactive demonstration of Nostr Wallet Connect with Breez
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {[
-            { 
-              title: 'Connect Wallet', 
-              description: 'Establish connection with Breez wallet',
-              status: 'Ready'
-            },
-            { 
-              title: 'Send Payment', 
-              description: 'Create and send lightning payments',
-              status: 'Available'
-            },
-            { 
-              title: 'Receive Payment', 
-              description: 'Generate invoices and receive payments',
-              status: 'Available'
-            },
-            { 
-              title: 'Transaction History', 
-              description: 'View payment history and details',
-              status: 'Available'
-            }
-          ].map((item, index) => (
+        {demoState === 'greeting' && (
+          <motion.div className="text-center">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+            Welcome to NWC Demo
+            </h1>
+            <p className="text-xl text-black max-w-2xl mx-auto mb-8">
+              Let's set up your Nostr Wallet Connect
+            </p>
             <motion.div
-              key={item.title}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+              className="text-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-                  {item.title}
-                </h3>
-                <span className="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded">
-                  {item.status}
-                </span>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                {item.description}
-              </p>
-              <button className="w-full py-2 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-colors">
-                Try Now
-              </button>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div 
-          className="text-center mt-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-8 shadow-xl max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-              🚀 Demo Instructions
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              This is a demonstration of Nostr Wallet Connect integration with Breez. 
-              Use the buttons above to test different wallet operations.
-            </p>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Status: Demo Mode Active
+              transition={{ delay: 0.8, duration: 0.6 }}
+              >
+              <motion.button
+                className="px-8 py-3 rounded-lg font-semibold text-lg bg-gradient-to-r from-blue-700 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-colors duration-300"
+                onClick={() => startDemo()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Start Demo
+              </motion.button>
+          </motion.div>
+          </motion.div>
+        )}
+        
+        {demoState === 'initializing' && (
+          <motion.div className="text-center">
+            <h2 className="text-3xl mb-4 text-black">Initializing...</h2>
+            <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+          </motion.div>
+        )}
+        
+        {demoState === 'mnemonic' && (
+          <motion.div className="text-center">
+            <h2 className="text-3xl mb-4">Your Seed Phrase</h2>
+            <div className="bg-gray-100 p-4 rounded-lg mb-4 max-w-2xl mx-auto">
+              <p className="font-mono text-sm">{mnemonic}</p>
             </div>
-          </div>
-        </motion.div>
+            <button 
+              onClick={() => navigator.clipboard.writeText(mnemonic)}
+              className="px-4 py-2 bg-green-500 text-white rounded mr-4"
+            >
+              Copy to Clipboard
+            </button>
+            <button 
+              onClick={proceedToNWC}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Next
+            </button>
+          </motion.div>
+        )}
+        
+        {demoState === 'nwc-ready' && (
+          <motion.div className="text-center">
+            <h2 className="text-3xl mb-4">Your NWC Connection</h2>
+            <div className="bg-gray-100 p-4 rounded-lg mb-4 max-w-2xl mx-auto">
+              <p className="font-mono text-xs break-all">{nwcUri}</p>
+            </div>
+            <button 
+              onClick={() => navigator.clipboard.writeText(nwcUri)}
+              className="px-4 py-2 bg-green-500 text-white rounded"
+            >
+              Copy URI
+            </button>
+            <p className="mt-4 text-sm text-gray-600">
+              Scan this with Mutiny Wallet or copy the URI
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   )

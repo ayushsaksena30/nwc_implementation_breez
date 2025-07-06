@@ -37,7 +37,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-sky-100 to-indigo-100">
       
       <Navbar />
 
@@ -52,7 +52,7 @@ export default function Home() {
             Demo Implementation of <br />
             Nostr Wallet Connect in Breez
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-black max-w-2xl mx-auto mb-8">
             Nostr Wallet Connect is an open secure protocol that enables seamless interaction between wallets and applications
           </p>
         </motion.div>
@@ -74,7 +74,7 @@ export default function Home() {
             </motion.button>
             
             <motion.button
-              className="px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-all duration-300 flex items-center gap-2"
+              className="px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-all duration-300 flex items-center gap-2"
               onClick={() => window.open('https://sdk-doc-liquid.breez.technology', '_blank')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

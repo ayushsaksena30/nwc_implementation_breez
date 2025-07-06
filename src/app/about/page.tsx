@@ -23,7 +23,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-sky-100 to-indigo-100">
       <Navbar />
       <motion.div
         className="container mx-auto px-6 py-12"
@@ -32,17 +32,17 @@ export default function AboutPage() {
         animate="visible"
       >
         <motion.div className="text-center mb-16" variants={itemVariants}>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            About Breez
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+        About Breez
           </h1>
         </motion.div>
 
         <motion.div variants={itemVariants} className="mb-16">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
-              <p className='text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6'>
+            <div className="bg-blue-200 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
+              <p className='text-lg text-gray-800 leading-relaxed mb-6'>
               Breez is a self-custodial Lightning-as-a-Service company bringing permissionless, peer-to-peer bitcoin payments to apps and services globally with the free and open-source Breez SDK.              </p>
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+              <p className="text-lg text-gray-800 leading-relaxed mb-6">
               The Breez SDK provides developers with a end-to-end solution for integrating self-custodial Lightning payments into their apps and services. It eliminates the need for third parties, simplifies the complexities of Bitcoin and Lightning, and enables seamless onboarding for billions of users to the future of peer-to-peer payments.
               </p>
               <motion.div
@@ -52,7 +52,7 @@ export default function AboutPage() {
               transition={{ delay: 0.8, duration: 0.6 }}
               >
               <motion.button
-                className="px-8 py-3 rounded-lg font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-colors duration-300"
+                className="px-8 py-3 rounded-lg font-semibold text-lg bg-gradient-to-r from-blue-700 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-colors duration-300"
                 onClick={() => window.open('https://breez.technology', '_blank')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -65,7 +65,7 @@ export default function AboutPage() {
         </motion.div>
 
         <motion.div className='flex flex-col items-center justify-center'>
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
+          <h2 className="text-3xl font-bold text-gray-500 mb-6">
             Contact Us
           </h2>
             <div className="text-center">
