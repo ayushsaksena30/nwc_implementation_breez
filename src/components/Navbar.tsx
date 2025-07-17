@@ -1,9 +1,6 @@
-'use client'
-
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -27,29 +24,27 @@ export default function Navbar() {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center group">
+            <Link to="/" className="flex items-center group">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Image
+                <img
                   src="/logo-breez-blue.svg"
                   alt="Breez Logo"
-                  width={80}
-                  height={29}
                   className="h-7 w-auto"
                 />
               </motion.div>
             </Link>
 
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              <Link to="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 Home
               </Link>
-              <Link href="/demo" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              <Link to="/demo" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 Demo
               </Link>
-              <Link href="/about" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 About
               </Link>
             </div>
@@ -85,7 +80,7 @@ export default function Navbar() {
         >
           <div className="py-4 space-y-3 border-t border-gray-200 dark:border-gray-800">
             <Link 
-              href="/" 
+              to="/" 
               className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -93,7 +88,7 @@ export default function Navbar() {
             </Link>
 
             <Link 
-              href="/demo" 
+              to="/demo" 
               className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -101,15 +96,7 @@ export default function Navbar() {
             </Link>
             
             <Link 
-              href="/features" 
-              className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors font-medium"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </Link>
-
-            <Link 
-              href="/about" 
+              to="/about" 
               className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
