@@ -1,13 +1,11 @@
-'use client'
-
 import { motion } from 'framer-motion'
-import { useState } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import Navbar from '@/components/Navbar'
+import Navbar from './components/Navbar'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import Demo from './pages/Demo'
+import About from './pages/About'
 
-export default function Home() {
-  const router = useRouter()
+function Home() {
+  const navigate = useNavigate()
 
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -66,7 +64,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <motion.button
               className="px-8 py-4 rounded-lg font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-colors duration-300"
-              onClick={() => router.push('/demo')}
+              onClick={() => navigate('/demo')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -104,7 +102,7 @@ export default function Home() {
             { name: 'Pay Invoice', color: 'from-blue-400 to-blue-600', icon: '/pay-invoice.png' },
             { name: 'List Transactions', color: 'from-purple-400 to-purple-600', icon: '/list-transactions.png' },
             { name: 'Get Balance', color: 'from-cyan-400 to-blue-500', icon: '/get-balance.png' }
-          ].map((tech, index) => (
+          ].map((tech) => (
             <motion.div
               key={tech.name}
               className={`p-6 rounded-2xl bg-gradient-to-br ${tech.color} text-white shadow-xl`}
@@ -114,11 +112,9 @@ export default function Home() {
               whileTap="tap"
             >
               <div className="flex flex-col items-center text-center">
-                <Image
+                <img
                   src={tech.icon}
                   alt={`${tech.name} icon`}
-                  width={48}
-                  height={48}
                   className="w-12 h-12 object-contain mb-3"
                 />
                 <h3 className="text-xl font-semibold">{tech.name}</h3>
@@ -130,3 +126,17 @@ export default function Home() {
     </div>
   )
 }
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/demo" element={<Demo />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Router>
+  )
+}
+
+export default App 
