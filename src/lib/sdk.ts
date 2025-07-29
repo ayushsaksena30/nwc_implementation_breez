@@ -8,6 +8,12 @@ let sdk: any = null
 async function initializeBreezSDK() {
   try{
     console.log('Starting Breez SDK initialization...')
+    
+    if (sdk) {
+      console.log('SDK already initialized, returning cached mnemonic')
+      return { mnemonic: cachedMnemonic, success: true }
+    }
+    
     if (typeof init !== 'function') {
       throw new Error('WASM init function not available')
     }
@@ -24,8 +30,8 @@ async function initializeBreezSDK() {
       throw new Error('defaultConfig function not available')
     }
     
-    const config = defaultConfig('testnet', apiKey)
-    console.log('Config created with testnet')
+    const config = defaultConfig('mainnet', apiKey)
+    console.log('Config created with mainnet')
     
     config.enableNwc = true
     
@@ -38,9 +44,11 @@ async function initializeBreezSDK() {
     console.log('SDK connected successfully!')
     
     cachedMnemonic = mnemonic
+    console.log('SDK initialization completed successfully')
     return { mnemonic: cachedMnemonic, success: true }
   } catch (error) {
     console.error('Error initializing Breez SDK:', error)
+    sdk = null
     throw error
   }
 }
@@ -51,21 +59,13 @@ async function getNwcConnectionUri() {
       throw new Error('SDK not initialized')
     }
     
-    const nwcUri = await sdk.getNwcConnectionUri()
+    const nwcUri = await sdk.getNwcUri()
     console.log('NWC URI generated')
     cachedNwcUri = nwcUri
     return cachedNwcUri
   } catch (error) {
     console.error('NWC URI Generation Failed:', error)
     throw error
-  }
-}
-
-async function getWalletInfo() {
-  return {
-    balance: null,
-    info: null,
-    isConnected: !!cachedNwcUri
   }
 }
 
@@ -79,6 +79,5 @@ async function disconnectBreez() {
 export {
   initializeBreezSDK,
   getNwcConnectionUri,
-  getWalletInfo,
   disconnectBreez
 }

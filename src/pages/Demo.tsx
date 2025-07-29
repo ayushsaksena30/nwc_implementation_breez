@@ -8,6 +8,7 @@ export default function Demo() {
   const [demoState, setDemoState] = useState('greeting')
   const [mnemonic, setMnemonic] = useState('')
   const [nwcUri, setNwcUri] = useState('')
+  const [showCopyPopup, setShowCopyPopup] = useState(false)
 
 
   useEffect(() => {
@@ -25,8 +26,6 @@ export default function Demo() {
   }, [])
 
   const startDemo = async () => {
-    setDemoState('initializing')
-    localStorage.setItem('demoState', 'initializing')
     try{
       const {mnemonic}=await initializeBreezSDK()
       setMnemonic(mnemonic)
@@ -51,6 +50,7 @@ export default function Demo() {
       localStorage.setItem('demoState', 'nwc-ready')
     } catch (error) {
       console.error('NWC failed:', error)
+      setDemoState('nwc-error')
     }
   }
 
@@ -60,10 +60,37 @@ export default function Demo() {
     setMnemonic('')
     setNwcUri('')
   }
+
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setShowCopyPopup(true)
+      setTimeout(() => setShowCopyPopup(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy text:', error)
+    }
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-200 via-sky-100 to-indigo-100">
       <Navbar />
+      
+      {showCopyPopup && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg"
+        >
+          <div className="flex items-center space-x-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">Copied to clipboard!</span>
+          </div>
+        </motion.div>
+      )}
+      
       <div className="container mx-auto px-6 py-12">
         {demoState !== 'greeting' && (
           <div className="text-right mb-4">
@@ -113,20 +140,22 @@ export default function Demo() {
           <motion.div className="text-center">
             <h2 className="text-3xl mb-4">Your Seed Phrase</h2>
             <div className="bg-gray-100 p-4 rounded-lg mb-4 max-w-2xl mx-auto">
-              <p className="font-mono text-sm">{mnemonic}</p>
+              <p className="font-mono text-sm select-text text-black">{mnemonic}</p>
             </div>
-            <button 
-              onClick={() => navigator.clipboard.writeText(mnemonic)}
-              className="px-4 py-2 bg-green-500 text-white rounded mr-4"
-            >
-              Copy to Clipboard
-            </button>
-            <button 
-              onClick={proceedToNWC}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Next
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={() => handleCopyToClipboard(mnemonic)}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors w-full sm:w-auto"
+              >
+                Copy to Clipboard
+              </button>
+              <button 
+                onClick={proceedToNWC}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors w-full sm:w-auto"
+              >
+                Next
+              </button>
+            </div>
           </motion.div>
         )}
         
@@ -134,17 +163,44 @@ export default function Demo() {
           <motion.div className="text-center">
             <h2 className="text-3xl mb-4">Your NWC Connection</h2>
             <div className="bg-gray-100 p-4 rounded-lg mb-4 max-w-2xl mx-auto">
-              <p className="font-mono text-xs break-all">{nwcUri}</p>
+              <p className="font-mono text-xs break-all text-black">{nwcUri}</p>
             </div>
             <button 
-              onClick={() => navigator.clipboard.writeText(nwcUri)}
-              className="px-4 py-2 bg-green-500 text-white rounded"
+              onClick={() => handleCopyToClipboard(nwcUri)}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
             >
               Copy URI
             </button>
-            <p className="mt-4 text-sm text-gray-600">
-              Scan this with Mutiny Wallet or copy the URI
-            </p>
+          </motion.div>
+        )}
+
+        {demoState === 'nwc-error' && (
+          <motion.div className="text-center">
+            <h2 className="text-3xl mb-4 text-red-600">NWC Connection Failed</h2>
+            <div className="bg-red-50 border border-red-200 p-6 rounded-lg mb-4 max-w-2xl mx-auto">
+              <p className="text-red-700 mb-4">
+                Failed to generate NWC connection URI. This might be due to:
+              </p>
+              <ul className="text-red-600 text-sm text-left space-y-2">
+                <li>• SDK initialization issues</li>
+                <li>• Network connectivity problems</li>
+                <li>• API key configuration issues</li>
+              </ul>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={proceedToNWC}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                Try Again
+              </button>
+              <button 
+                onClick={resetDemo}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+              >
+                Start Over
+              </button>
+            </div>
           </motion.div>
         )}
       </div>
