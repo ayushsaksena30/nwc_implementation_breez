@@ -5,6 +5,18 @@ let cachedMnemonic=''
 let cachedNwcUri=''
 let sdk: any = null
 
+type PayInvoiceCallback = (result: any) => void
+type ListTransactionsCallback = (transactions: any[]) => void
+type GetBalanceCallback = (balance: any) => void
+type EventPopupCallback = (eventType: string, eventData: any) => void
+
+let eventListeners: {
+  payInvoice?: PayInvoiceCallback
+  listTransactions?: ListTransactionsCallback
+  getBalance?: GetBalanceCallback
+  showPopup?: EventPopupCallback
+} = {}
+
 async function initializeBreezSDK() {
   try{
     console.log('Starting Breez SDK initialization...')
@@ -45,6 +57,50 @@ async function initializeBreezSDK() {
     
     cachedMnemonic = mnemonic
     console.log('SDK initialization completed successfully')
+
+    const listener = {
+      onEvent: (event: any) => {   
+        console.log('Event received:', event)
+        
+        if (event.type === "nWC" && event.details) {
+          console.log('NWC Event received:', event)
+          
+          const eventType = event.details.type
+          
+          if (eventType === 'payInvoice') {
+            console.log('PayInvoice event:', event)
+            if (eventListeners.payInvoice) {
+              eventListeners.payInvoice(event)
+            }
+            if (eventListeners.showPopup) {
+              eventListeners.showPopup('payInvoice', event)
+            }
+          }
+          
+          if (eventType === 'listTransactions') {
+            console.log('ListTransactions event:', event)
+            if (eventListeners.listTransactions) {
+              eventListeners.listTransactions(event)
+            }
+            if (eventListeners.showPopup) {
+              eventListeners.showPopup('listTransactions', event)
+            }
+          }
+          
+          if (eventType === 'getBalance') {
+            console.log('GetBalance event:', event)
+            if (eventListeners.getBalance) {
+              eventListeners.getBalance(event)
+            }
+            if (eventListeners.showPopup) {
+              eventListeners.showPopup('getBalance', event)
+            }
+          }
+        }
+      }
+    }
+    const listenerId = await sdk.addEventListener(listener)
+
     return { mnemonic: cachedMnemonic, success: true }
   } catch (error) {
     console.error('Error initializing Breez SDK:', error)
@@ -76,8 +132,18 @@ async function disconnectBreez() {
   console.log('Breez SDK disconnected')
 }
 
+function setEventListeners(listeners: {
+  payInvoice?: PayInvoiceCallback
+  listTransactions?: ListTransactionsCallback
+  getBalance?: GetBalanceCallback
+  showPopup?: EventPopupCallback
+}) {
+  eventListeners = { ...eventListeners, ...listeners }
+}
+
 export {
   initializeBreezSDK,
   getNwcConnectionUri,
-  disconnectBreez
+  disconnectBreez,
+  setEventListeners
 }
